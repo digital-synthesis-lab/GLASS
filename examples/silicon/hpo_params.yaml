@@ -1,0 +1,31 @@
+# Sampler settings found by hyperparameter optimization (scripts/hpo.py) on
+# amorphous Si, with a prior trained at 2.5 g/cm3 and PDF targets at
+# 1.5 g/cm3. They add Tersoff-energy guidance, a Langevin corrector and three
+# guided passes on top of the preprint protocol. These options use the Si
+# Tersoff potential and only apply to pure Si.
+#
+#   glass generate EXPERIMENT --inits INITS --guidance-type pdf \
+#       --ref-path REFS --params examples/silicon/hpo_params.yaml
+
+# Unconditional prepass and guided passes share one schedule
+uncond_tmin: 0.005
+uncond_tmax: 0.95
+uncond_tstep: 256
+tmin: 0.005
+tmax: 0.95
+tstep: 256
+t_schedule_rho: 1.0
+n_restart: 3
+rho: 500.0
+pdf_cutoff: 5.0
+
+tersoff_guidance: true
+tersoff_lambda: 0.30
+tersoff_schedule: sigmoid
+tersoff_t_gate: 0.50
+tersoff_clamp: 10.0
+
+n_corr: 2
+corr_step_size: 0.50
+corr_use_tersoff: true
+corr_t_gate: 0.50

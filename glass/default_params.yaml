@@ -1,0 +1,114 @@
+# Default hyperparameters of glass.
+# This file mirrors glass/experiment.py::ExperimentConfig, which is the source
+# of truth (tests/test_experiment.py checks that both agree).
+#
+# Copy it, keep the keys you want to change, and pass it with --params:
+#   glass generate ./exp --inits ./inits --params my_run.yaml
+#   glass train    ./exp --model-type score --num-species 1 --params my_run.yaml
+#
+# Only keys present in the file are applied. Precedence (highest first):
+# explicit CLI flags, --params file, experiment config.yaml, these defaults.
+
+# ---------------------------------------------------------------------------
+# Experiment metadata
+# ---------------------------------------------------------------------------
+name: experiment
+model_type: score      # "score" | "spec"
+
+# ---------------------------------------------------------------------------
+# Model architecture
+# ---------------------------------------------------------------------------
+num_species: 1
+num_convs: 5
+dim: 200
+ema_decay: 0.9999
+
+# ---------------------------------------------------------------------------
+# Training
+# ---------------------------------------------------------------------------
+max_epochs: 8000
+batch_size: 16         # structures per batch and per GPU; aim for >~1000 atoms
+learning_rate: 0.001
+cutoff: 5.0            # graph cutoff radius (Å)
+k: 0.8                 # maximum noise level, sigma(t) = k * t
+dup: 64                # noisy copies of each structure per epoch
+train_size: 0.9        # per-atom train/validation mask (spec models)
+scale_y: 1.0           # spectrum scale factor (spec models)
+num_workers: 8
+
+# Spec models only (null for score models)
+spec_type: null        # "exafs" | "xanes"
+out_dim: null          # 400 for exafs, 100 for xanes
+
+save_top_k: 3
+
+# ---------------------------------------------------------------------------
+# Generation (protocol of arXiv:2603.23210)
+# ---------------------------------------------------------------------------
+checkpoint: best       # "best" | "last" | file name in checkpoints/
+n_runs: 10             # independent runs per initial structure
+save_traj: false
+device: cuda:0
+
+# Unconditional pass: unconditional runs, and prepass of guided runs
+uncond_tmin: 0.001
+uncond_tmax: 1.0
+uncond_tstep: 512
+uncond_prepass: true
+
+# Guided pass
+tmin: 0.001
+tmax: 0.6
+tstep: 512
+
+t_schedule_rho: 1.0    # power-law exponent of the time grid; 1.0 = uniform
+rho: null              # guidance weight (w in the preprint); null = per-type
+                       # default: pdf 300, adf 1000, xrd 1, nd 1
+
+# PDF (pdf_cutoff should not exceed half the cell length)
+pdf_cutoff: 8.0
+bin_size: 100
+# ADF
+angle_bins: 100
+adf_sigma: 0.1
+adf_cutoff: 3.5
+# XRD / ND
+element_names: []
+qmin: 1.0
+qmax: 20.0
+qstep: 0.1
+biso: 1.5
+
+xas_average: false     # exafs/xanes: compare atom-averaged spectra
+min_dist: null         # hard minimum-distance veto in Å; null disables it
+lambda_prior: 1.0      # scale factor on the prior score
+n_restart: 1           # number of guided passes
+
+# ---------------------------------------------------------------------------
+# Optional sampler extensions (off in the preprint protocol, pure Si only).
+# See examples/silicon/hpo_params.yaml for tuned values.
+# ---------------------------------------------------------------------------
+tersoff_guidance: false
+tersoff_lambda: 0.3
+tersoff_schedule: sigmoid  # "constant" | "linear" | "sigmoid"
+tersoff_t_gate: 0.5
+tersoff_clamp: 10.0
+
+n_corr: 0              # Langevin corrector steps per predictor step
+corr_step_size: 0.5
+corr_use_tersoff: true
+corr_t_gate: 0.5
+
+sa_n_steps: 0          # simulated-annealing steps after the reverse SDE
+sa_T0: 0.01
+sa_T_end: 1.0e-05
+sa_lr: 0.001
+sa_lr_clamp: 0.2
+
+# ---------------------------------------------------------------------------
+# Infrastructure
+# ---------------------------------------------------------------------------
+accelerator: gpu
+strategy: ddp_find_unused_parameters_true
+matmul_precision: medium
+refresh_rate: 10

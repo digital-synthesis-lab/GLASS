@@ -1,0 +1,17 @@
+# Score model for amorphous Si, trained on examples/silicon/data/density_2.5
+# with `glass train <exp> --model-type score --num-species 1` on two GPUs.
+# Generation settings are not listed, so the defaults in
+# glass/default_params.yaml apply.
+model_type: score
+num_species: 1
+num_convs: 5
+dim: 200
+ema_decay: 0.9999
+max_epochs: 8000
+batch_size: 16
+learning_rate: 0.001
+cutoff: 5.0
+k: 0.8
+dup: 64
+train_size: 0.9
+num_workers: 8
