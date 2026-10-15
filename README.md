@@ -6,7 +6,7 @@ At sampling time, the reverse diffusion is guided by differentiable spectra comp
 No interatomic potential is needed during generation.
 
 This repository contains the code for the preprint [Generative Inversion of Spectroscopic Data for Amorphous Structure Elucidation](https://arxiv.org/abs/2603.23210), together with a worked example on amorphous silicon.
-The raw data for full reproducibility of the paper is available on [Zenodo]().
+The raw data for full reproducibility of the paper is available on [FigShare](https://doi.org/10.6084/m9.figshare.34515966).
 
 The following targets are supported for guidance:
 
@@ -266,7 +266,7 @@ The outcomes of the silicon example (structural metrics for each type of guidanc
 
 ## Manuscript data
 
-The data for the preprint will be released on Zenodo upon publication.
+The data for the preprint is available on [FigShare](https://doi.org/10.6084/m9.figshare.34515966).
 
 ## Citing
 
